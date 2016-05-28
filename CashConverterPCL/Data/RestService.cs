@@ -33,7 +33,7 @@ namespace CashConverterPCL
 				}
 			}
 			catch (Exception e) {
-				Debug.WriteLine (@"					ERROR {0}", e.Message);
+				Debug.WriteLine (@"ERROR {0}", e.Message);
 			}
 
 			return Rates;

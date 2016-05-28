@@ -24,7 +24,8 @@ namespace CashConverterPCL
 			}
 
 			try {
-				var result = Convert.ToDouble(input) * await ConversionRate();
+				var rate = await ConversionRate();
+				var result = Convert.ToDouble(input) * rate;
 
 				output = $"${input} = £{result}";
 			}
@@ -37,17 +38,14 @@ namespace CashConverterPCL
 		}
 
 		private async Task<double> ConversionRate() {
-			var jObject = JObject.Parse ("{}");
-			var client = new HttpClient ();
-			var uri = new Uri (string.Format (Constants.RestUrl, string.Empty));
-			var response = await client.GetAsync (uri);
+			var service = new RestService ();
+			var rates = await service.GetConversionRatesAsync ();
 
-			if (response.IsSuccessStatusCode) {
-				var content = await response.Content.ReadAsStringAsync ();
-				jObject = JObject.Parse (content);
-				var rate = (double)jObject["rates"]["GBP"];
-
-				return rate;
+			try {
+				return (double)rates["rates"]["GBP"];
+			}
+			catch (Exception e) {
+				Debug.WriteLine ($"Error retrieving rate: {e.Message}");
 			}
 
 			return 0.0;
